@@ -31,10 +31,12 @@ func New(name string, logLevel int) *Logger {
 }
 
 // Finish calculates the elapsed time, and prints to the provided io.Writer.
-func (l *Logger) Finish() {
+func (l *Logger) Finish() string {
 	l.setElapsed()
-	writeLog(l)
+	return retLog(l)
 }
+
+
 
 // Current returns the current elapsed time in a formatted string.
 func (l *Logger) Elapsed() string {
@@ -52,9 +54,9 @@ func numRoutines() int {
 	return runtime.NumGoroutine()
 }
 
-// getCPUInfo retrieves the information from the /proc/stat file on unix-like
-// systems.
-func writeLog(l *Logger) {
+// writeLog finishes off the logger, and prints the output to stdout (depending
+// on the log level).
+func (l *Logger) WriteLog() {
 	switch l.logLevel {
 	case 1:
 		fmt.Println(level1(l))
@@ -64,6 +66,17 @@ func writeLog(l *Logger) {
 	return
 }
 
+// retLog finishes off the logger, and returns the output as a string.
+func retLog(l *Logger) string {
+	switch l.logLevel {
+	case 1:
+		return level1(l)
+	case 2:
+		return level2(l)
+	default:
+		return level1(l)
+	}
+}
 
 // This is the basic information for log level 1.
 func level1(l *Logger) string {
